@@ -21,6 +21,27 @@
             align-items: center;
         }
 
+        .notification-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            background: linear-gradient(45deg, #f56565, #ff8e53);
+            color: white;
+            text-align: center;
+            padding: 12px;
+            z-index: 1001;
+            transform: translateY(-100%);
+            transition: transform 0.4s ease-in-out;
+            font-size: 1rem;
+            font-weight: 500;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        .notification-bar.visible {
+            transform: translateY(0);
+        }
+
         .header {
             text-align: center;
             color: white;
@@ -190,14 +211,21 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            min-width: 100px;
+            justify-content: center;
+        }
+        
+        .audio-btn:disabled {
+            cursor: not-allowed;
+            filter: grayscale(50%);
         }
 
-        .audio-btn:hover {
+        .audio-btn:hover:not(:disabled) {
             transform: scale(1.05);
             box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
         }
 
-        .audio-btn:active {
+        .audio-btn:active:not(:disabled) {
             transform: scale(0.95);
         }
 
@@ -270,19 +298,19 @@
         }
 
         /* Category specific styles */
-        .card.health .card-face {
+        .card.general .card-face {
             border-left: 5px solid #48bb78;
         }
 
-        .card.qualities .card-face {
-            border-left: 5px solid #ed8936;
-        }
-
-        .card.sports .card-face {
+        .card.travel .card-face {
             border-left: 5px solid #4299e1;
         }
 
-        .card.leadership .card-face {
+        .card.movies .card-face {
+            border-left: 5px solid #ed8936;
+        }
+
+        .card.location .card-face {
             border-left: 5px solid #9f7aea;
         }
 
@@ -424,30 +452,36 @@
     </style>
 </head>
 <body>
-    <div style="text-align: center; color: rgba(255,255,255,0.8); font-size: 0.8rem; margin-bottom: 10px; line-height: 1.3;">
-        وزارة التعليم (٢٨٠)<br>
-        الإدارة العامة للتعليم بمنطقة مكة المكرمة<br>
-        الشؤون التعليمية<br>
-        إدارة أداء التعليم / قسم الإدارة<br>
-        ابتدائية ومتوسطة التحفيظ ومتوسطة
+    <div id="notification-bar" class="notification-bar"></div>
+
+    <div style="display: flex; align-items: center; justify-content: center; gap: 20px; color: rgba(255,255,255,0.8); font-size: 0.8rem; margin-bottom: 10px; line-height: 1.3;">
+        <img src="https://i.ibb.co/tMdqkb7z/image.png" alt="شعار وزارة التعليم" style="height: 80px; border-radius: 8px;">
+        <div style="text-align: center;">
+            وزارة التعليم (٢٨٠)<br>
+            الإدارة العامة للتعليم بمنطقة مكة المكرمة<br>
+            الشؤون التعليمية<br>
+            إدارة أداء التعليم / قسم الإدارة<br>
+            ابتدائية ومتوسطة التحفيظ ومتوسطة
+        </div>
     </div>
     
     <div class="header">
-        <h1>🎓 English Audio Flashcards - Grade 3 Intermediate</h1>
+        <img src="https://i.ibb.co/dw1Gs4dK/Chat-GPT-Image-Sep-16-2025-01-24-39-AM.png" alt="AI Illustration" style="width: 100px; height: 100px; margin-bottom: 15px; border-radius: 50%; box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
+        <h1>🎓 English Audio Flashcards - Grade 8 Intermediate</h1>
         <p>Interactive flashcards to learn English with audio pronunciation</p>
         <p style="font-size: 1rem; margin-top: 10px; color: rgba(255,255,255,0.9);">Teacher: Aza Almajdy</p>
     </div>
 
     <div class="stats" id="stats">
-        Total Words: 27 | Currently Showing: 27
+        <!-- Stats will be populated by JavaScript -->
     </div>
 
     <div class="controls">
         <button class="btn active" onclick="filterCards('all')">All Words</button>
-        <button class="btn" onclick="filterCards('health')">Health & Lifestyle</button>
-        <button class="btn" onclick="filterCards('qualities')">Personal Qualities</button>
-        <button class="btn" onclick="filterCards('sports')">Sports & Competition</button>
-        <button class="btn" onclick="filterCards('leadership')">Leadership & Government</button>
+        <button class="btn" onclick="filterCards('general')">General</button>
+        <button class="btn" onclick="filterCards('travel')">Travel & Hotels</button>
+        <button class="btn" onclick="filterCards('movies')">Movies & Action</button>
+        <button class="btn" onclick="filterCards('location')">Location</button>
         <button class="btn quiz-btn" onclick="toggleQuizMode()">📝 Quiz Mode</button>
         <button class="btn" onclick="flipAllCards()">🔄 Flip All</button>
     </div>
@@ -472,45 +506,218 @@
 
     <script>
         const flashcards = [
-            // Health & Lifestyle
-            { english: "fitness", translation: "لياقة بدنية", type: "noun", category: "health", emoji: "💪", lesson: "Health" },
-            { english: "fanatic", translation: "متعصب / مهووس", type: "noun", category: "health", emoji: "🔥", lesson: "Health" },
-            { english: "herbal tea", translation: "شاي عشبي", type: "noun", category: "health", emoji: "🫖", lesson: "Health" },
-            { english: "physical exercise", translation: "تمرين بدني", type: "noun", category: "health", emoji: "🏃‍♀️", lesson: "Health" },
-            { english: "solving puzzle", translation: "حل الألغاز", type: "verb", category: "health", emoji: "🧩", lesson: "Health" },
-            { english: "addict", translation: "مدمن", type: "noun", category: "health", emoji: "⚠️", lesson: "Health" },
-            
-            // Personal Qualities & Actions
-            { english: "devoted", translation: "مخلص / مكرس", type: "adjective", category: "qualities", emoji: "❤️", lesson: "Qualities" },
-            { english: "donate", translation: "يتبرع", type: "verb", category: "qualities", emoji: "🤝", lesson: "Qualities" },
-            { english: "Blood Donor Clinic", translation: "عيادة المتبرعين بالدم", type: "noun", category: "qualities", emoji: "🩸", lesson: "Qualities" },
-            
-            // Sports & Competition
-            { english: "Athlete", translation: "رياضي", type: "noun", category: "sports", emoji: "🏆", lesson: "Sports" },
-            { english: "award", translation: "جائزة", type: "noun", category: "sports", emoji: "🥇", lesson: "Sports" },
-            { english: "crippling", translation: "مُعيق / شديد", type: "adjective", category: "sports", emoji: "⚡", lesson: "Sports" },
-            { english: "twin", translation: "توأم", type: "noun", category: "sports", emoji: "👯", lesson: "Sports" },
-            { english: "falcons", translation: "صقور", type: "noun", category: "sports", emoji: "🦅", lesson: "Sports" },
-            { english: "Junior League", translation: "الدوري الصغار", type: "noun", category: "sports", emoji: "⚽", lesson: "Sports" },
-            { english: "coach", translation: "مدرب", type: "noun", category: "sports", emoji: "👨‍🏫", lesson: "Sports" },
-            { english: "bulletin board", translation: "لوحة الإعلانات", type: "noun", category: "sports", emoji: "📋", lesson: "Sports" },
-            { english: "forward", translation: "مهاجم", type: "noun", category: "sports", emoji: "⚡", lesson: "Sports" },
-            { english: "Division", translation: "قسم / فرقة", type: "noun", category: "sports", emoji: "📊", lesson: "Sports" },
-            
-            // Leadership & Government
-            { english: "the Two Holy Mosques", translation: "الحرمين الشريفين", type: "noun", category: "leadership", emoji: "🕌", lesson: "Leadership" },
-            { english: "Crown Prince", translation: "ولي العهد", type: "noun", category: "leadership", emoji: "👑", lesson: "Leadership" },
-            { english: "predecessor", translation: "السلف / السابق", type: "noun", category: "leadership", emoji: "📜", lesson: "Leadership" },
-            { english: "Governor", translation: "محافظ / أمير", type: "noun", category: "leadership", emoji: "🏛️", lesson: "Leadership" },
-            { english: "Red Crescent", translation: "الهلال الأحمر", type: "noun", category: "leadership", emoji: "🌙", lesson: "Leadership" },
-            { english: "metropolis", translation: "مدينة كبرى", type: "noun", category: "leadership", emoji: "🏙️", lesson: "Leadership" },
-            { english: "humanitarian", translation: "إنساني", type: "adjective", category: "leadership", emoji: "🤲", lesson: "Leadership" }
+            // General
+            { english: "festival", translation: "مهرجان", type: "noun", category: "general", emoji: "🎉", lesson: "General" },
+            { english: "spell", translation: "يتهجأ", type: "verb", category: "general", emoji: "✍️", lesson: "General" },
+            { english: "elevator", translation: "مصعد", type: "noun", category: "general", emoji: "↕️", lesson: "General" },
+
+            // Travel & Accommodation
+            { english: "youth hostel", translation: "نزل الشباب", type: "noun", category: "travel", emoji: "🏨", lesson: "Travel" },
+            { english: "backpackers", translation: "رحالة", type: "noun", category: "travel", emoji: "🎒", lesson: "Travel" },
+            { english: "budget", translation: "ميزانية", type: "noun", category: "travel", emoji: "💰", lesson: "Travel" },
+            { english: "monuments", translation: "آثار", type: "noun", category: "travel", emoji: "🏛️", lesson: "Travel" },
+            { english: "bellhop", translation: "عامل الفندق", type: "noun", category: "travel", emoji: "🛎️", lesson: "Travel" },
+            { english: "reservation", translation: "حجز", type: "noun", category: "travel", emoji: "📅", lesson: "Travel" },
+            { english: "credit card", translation: "بطاقة ائتمان", type: "noun", category: "travel", emoji: "💳", lesson: "Travel" },
+            { english: "concierge", translation: "موظف خدمات", type: "noun", category: "travel", emoji: "🤵", lesson: "Travel" },
+
+            // Movies & Action
+            { english: "documentary", translation: "فيلم وثائقي", type: "noun", category: "movies", emoji: "🎬", lesson: "Movies" },
+            { english: "martial arts", translation: "فنون قتالية", type: "noun", category: "movies", emoji: "🥋", lesson: "Movies" },
+            { english: "scene", translation: "مشهد", type: "noun", category: "movies", emoji: "🎥", lesson: "Movies" },
+            { english: "stuntman", translation: "ممثل بديل", type: "noun", category: "movies", emoji: "🤸", lesson: "Movies" },
+            { english: "physical strength", translation: "قوة بدنية", type: "noun", category: "movies", emoji: "💪", lesson: "Movies" },
+            { english: "balance", translation: "توازن", type: "noun", category: "movies", emoji: "🧘", lesson: "Movies" },
+
+            // Location
+            { english: "inside", translation: "بالداخل", type: "preposition", category: "location", emoji: "🏠", lesson: "Location" },
+            { english: "outside", translation: "بالخارج", type: "preposition", category: "location", emoji: "🌳", lesson: "Location" },
+            { english: "in front of", translation: "أمام", type: "preposition", category: "location", emoji: "🚶", lesson: "Location" },
+            { english: "behind", translation: "خلف", type: "preposition", category: "location", emoji: "🔙", lesson: "Location" },
+            { english: "away", translation: "بعيداً", type: "adverb", category: "location", emoji: "💨", lesson: "Location" },
+            { english: "over", translation: "فوق", type: "preposition", category: "location", emoji: "✈️", lesson: "Location" },
+            { english: "under", translation: "تحت", type: "preposition", category: "location", emoji: "🛏️", lesson: "Location" },
         ];
 
         let currentFilter = 'all';
         let isPlayingAll = false;
         let isQuizMode = false;
         let currentVoice = 'american'; // Default to American
+
+        // --- NEW: Gemini TTS Integration ---
+        const apiKey = ""; // Provided by the Canvas environment
+
+        /**
+         * Converts a Base64 string to an ArrayBuffer.
+         * @param {string} base64 The Base64 encoded string.
+         * @returns {ArrayBuffer} The decoded ArrayBuffer.
+         */
+        function base64ToArrayBuffer(base64) {
+            const binaryString = window.atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        /**
+         * Converts raw PCM audio data to a WAV file Blob.
+         * @param {ArrayBuffer} pcmData The raw PCM data.
+         * @param {number} sampleRate The sample rate of the audio.
+         * @returns {Blob} A Blob representing the WAV file.
+         */
+        function pcmToWav(pcmData, sampleRate) {
+            const pcm16 = new Int16Array(pcmData);
+            const numChannels = 1;
+            const bytesPerSample = 2; // 16-bit
+            const blockAlign = numChannels * bytesPerSample;
+            const byteRate = sampleRate * blockAlign;
+            const dataSize = pcm16.length * bytesPerSample;
+
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            // RIFF header
+            view.setUint32(0, 0x52494646, false); // "RIFF"
+            view.setUint32(4, 36 + dataSize, true);
+            view.setUint32(8, 0x57415645, false); // "WAVE"
+            // "fmt " sub-chunk
+            view.setUint32(12, 0x666d7420, false); // "fmt "
+            view.setUint32(16, 16, true); // Sub-chunk size
+            view.setUint16(20, 1, true); // Audio format (1 = PCM)
+            view.setUint16(22, numChannels, true);
+            view.setUint32(24, sampleRate, true);
+            view.setUint32(28, byteRate, true);
+            view.setUint16(32, blockAlign, true);
+            view.setUint16(34, 16, true); // Bits per sample
+            // "data" sub-chunk
+            view.setUint32(36, 0x64617461, false); // "data"
+            view.setUint32(40, dataSize, true);
+
+            // Write PCM data
+            for (let i = 0; i < pcm16.length; i++) {
+                view.setInt16(44 + i * 2, pcm16[i], true);
+            }
+
+            return new Blob([view], { type: 'audio/wav' });
+        }
+        
+        /**
+         * Browser's SpeechSynthesis API as a fallback.
+         * @param {string} word The text to speak.
+         */
+        function playAudioBrowser(word) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(word);
+                utterance.lang = currentVoice === 'british' ? 'en-GB' : 'en-US';
+                utterance.rate = 0.8;
+                utterance.pitch = 1;
+                speechSynthesis.speak(utterance);
+            } else {
+                showNotification('Sorry, your browser does not support speech synthesis.');
+            }
+        }
+
+        /**
+         * Fetches and plays audio from the Gemini TTS API.
+         * @param {string} word The text to speak.
+         * @param {HTMLElement|null} buttonElement The button that was clicked, for UI updates.
+         */
+        async function playAudioGemini(word, buttonElement) {
+            const originalText = buttonElement ? buttonElement.innerHTML : '';
+            if (buttonElement) {
+                buttonElement.innerHTML = '...';
+                buttonElement.disabled = true;
+            }
+
+            try {
+                // Use different voices for American and British accents
+                const voiceName = currentVoice === 'british' ? 'Puck' : 'Kore';
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+                const payload = {
+                    model: "gemini-2.5-flash-preview-tts",
+                    contents: [{ parts: [{ text: `Say clearly: ${word}` }] }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: { prebuiltVoiceConfig: { voiceName: voiceName } }
+                        }
+                    },
+                };
+
+                // API call with exponential backoff for retries
+                let response;
+                let delay = 1000;
+                for (let i = 0; i < 4; i++) {
+                    response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    if (response.ok) break;
+                    if (response.status === 429 || response.status >= 500) {
+                         await new Promise(resolve => setTimeout(resolve, delay));
+                         delay *= 2;
+                    } else {
+                        break; // Don't retry for other client errors
+                    }
+                }
+
+                if (!response.ok) {
+                    throw new Error(`API request failed with status ${response.status}`);
+                }
+
+                const result = await response.json();
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                    const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                    if (!sampleRateMatch) throw new Error("Sample rate not found in mimeType");
+                    
+                    const sampleRate = parseInt(sampleRateMatch[1], 10);
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    const wavBlob = pcmToWav(pcmData, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    const audio = new Audio(audioUrl);
+                    
+                    // Return a promise that resolves when the audio finishes playing
+                    return new Promise(resolve => {
+                        audio.onended = () => {
+                            URL.revokeObjectURL(audioUrl);
+                            resolve();
+                        };
+                        audio.onerror = () => {
+                            URL.revokeObjectURL(audioUrl);
+                            console.error("Error playing generated audio.");
+                            resolve(); // Resolve even on error to not block sequences
+                        }
+                        audio.play();
+                    });
+
+                } else {
+                    throw new Error("Audio data not found in API response.");
+                }
+
+            } catch (error) {
+                console.error('Error fetching or playing TTS audio:', error);
+                showNotification('Could not play audio. Using fallback.');
+                playAudioBrowser(word); // Fallback to browser synthesis
+                return Promise.resolve(); // Resolve promise on error to not block playAll
+            } finally {
+                if (buttonElement) {
+                    buttonElement.innerHTML = originalText;
+                    buttonElement.disabled = false;
+                }
+            }
+        }
+        
+        // --- End of Gemini TTS Integration ---
+
 
         function createCards() {
             const container = document.getElementById('cardsContainer');
@@ -645,20 +852,10 @@
                 input.style.color = '#48bb78';
                 input.style.fontWeight = 'bold';
                 
-                // Play celebration sound and "Excellent!" with British accent
-                if ('speechSynthesis' in window) {
-                    // Create celebration sound effect
-                    playCelebrationSound();
-                    
-                    // Say "Excellent!" after a short delay
-                    setTimeout(() => {
-                        const praiseUtterance = new SpeechSynthesisUtterance('Excellent!');
-                        praiseUtterance.lang = currentVoice === 'british' ? 'en-GB' : 'en-US';
-                        praiseUtterance.rate = 0.8;
-                        praiseUtterance.pitch = 1.1;
-                        speechSynthesis.speak(praiseUtterance);
-                    }, 800); // Wait for celebration sound to play
-                }
+                playCelebrationSound();
+                setTimeout(() => {
+                    playAudioGemini('Excellent!', null); // Use Gemini TTS for praise
+                }, 800);
             } else {
                 result.innerHTML = `❌ Incorrect. The correct answer is: <strong>${flashcards[index].english}</strong>`;
                 result.className = 'quiz-result incorrect';
@@ -666,19 +863,15 @@
                 input.style.color = '#f56565';
                 input.style.fontWeight = 'bold';
                 
-                // Play error sound - loud beep
-                if ('speechSynthesis' in window) {
-                    playErrorSound();
-                }
+                playErrorSound();
             }
         }
 
         function playCelebrationSound() {
             // Create celebratory sound effect with multiple tones
             if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
-                const audioContext = new (AudioContext || webkitAudioContext)();
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 
-                // Victory melody - ascending notes
                 const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
                 
                 notes.forEach((frequency, index) => {
@@ -701,7 +894,6 @@
                     }, index * 120);
                 });
                 
-                // Add some sparkle effect - higher pitched quick notes
                 setTimeout(() => {
                     for (let i = 0; i < 6; i++) {
                         setTimeout(() => {
@@ -729,7 +921,7 @@
         function playErrorSound() {
             // Create loud error beep
             if (typeof AudioContext !== 'undefined' || typeof webkitAudioContext !== 'undefined') {
-                const audioContext = new (AudioContext || webkitAudioContext)();
+                const audioContext = new (window.AudioContext || window.webkitAudioContext)();
                 const oscillator = audioContext.createOscillator();
                 const gainNode = audioContext.createGain();
                 
@@ -784,18 +976,23 @@
             }
         }
 
+        function showNotification(message) {
+            const notificationBar = document.getElementById('notification-bar');
+            if (!notificationBar) return;
+            notificationBar.textContent = message;
+            notificationBar.classList.add('visible');
+
+            // Hide after a few seconds
+            setTimeout(() => {
+                notificationBar.classList.remove('visible');
+            }, 4000);
+        }
+
+        // Main controller for audio playback
         function playAudio(event, word) {
             event.stopPropagation();
-            
-            if ('speechSynthesis' in window) {
-                const utterance = new SpeechSynthesisUtterance(word);
-                utterance.lang = currentVoice === 'british' ? 'en-GB' : 'en-US';
-                utterance.rate = 0.8;
-                utterance.pitch = 1;
-                speechSynthesis.speak(utterance);
-            } else {
-                alert('Browser does not support speech synthesis');
-            }
+            const button = event.target;
+            playAudioGemini(word, button);
         }
 
         function filterCards(category) {
@@ -836,17 +1033,16 @@
 
         function stopPlayAll() {
             isPlayingAll = false;
-            speechSynthesis.cancel(); // Stop current speech
             
             const playBtn = document.getElementById('playAllBtn');
             playBtn.innerHTML = '🎵 Play All Words';
             playBtn.className = 'play-all-btn';
             
-            // Reset card scales
+            // Reset card scales, allowing CSS classes to handle transforms
             document.querySelectorAll('.card').forEach(c => c.style.transform = '');
         }
 
-        function playAllCards() {
+        async function playAllCards() {
             if (isPlayingAll) return;
             
             isPlayingAll = true;
@@ -856,52 +1052,34 @@
             
             const visibleCards = flashcards.filter((card, index) => {
                 const cardElement = document.getElementById(`card-${index}`);
-                return !cardElement.classList.contains('hidden');
+                return cardElement && !cardElement.classList.contains('hidden');
             });
             
-            let currentIndex = 0;
-            
-            function playNext() {
-                if (currentIndex >= visibleCards.length || !isPlayingAll) {
-                    stopPlayAll();
-                    return;
+            for (const card of visibleCards) {
+                if (!isPlayingAll) break;
+        
+                const originalIndex = flashcards.indexOf(card);
+                const cardElement = document.getElementById(`card-${originalIndex}`);
+                
+                // Reset styles on all cards, then highlight the current one
+                document.querySelectorAll('.card').forEach(c => c.style.transform = '');
+                if (cardElement) {
+                    cardElement.style.transform = cardElement.classList.contains('flipped') 
+                        ? 'rotateY(180deg) scale(1.05)' 
+                        : 'scale(1.05)';
+                    cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
                 
-                const card = visibleCards[currentIndex];
-                const utterance = new SpeechSynthesisUtterance(card.english);
-                utterance.lang = currentVoice === 'british' ? 'en-GB' : 'en-US';
-                utterance.rate = 0.7;
-                utterance.pitch = 1;
+                // Play audio and wait for it to finish
+                await playAudioGemini(card.english, null);
                 
-                utterance.onend = function() {
-                    if (isPlayingAll) {
-                        currentIndex++;
-                        setTimeout(playNext, 1500); // Wait 1.5 seconds between words
-                    }
-                };
-                
-                utterance.onerror = function() {
-                    if (isPlayingAll) {
-                        currentIndex++;
-                        setTimeout(playNext, 1000);
-                    }
-                };
-                
-                speechSynthesis.speak(utterance);
-                
-                // Highlight current card
-                document.querySelectorAll('.card').forEach(c => c.style.transform = '');
-                const cardElement = document.getElementById(`card-${flashcards.indexOf(card)}`);
-                if (cardElement && !cardElement.classList.contains('hidden')) {
-                    cardElement.style.transform = 'scale(1.05)';
-                    cardElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                // Wait for a bit after the audio finishes before moving to the next
+                if (isPlayingAll) {
+                    await new Promise(resolve => setTimeout(resolve, 1500));
                 }
             }
             
-            if ('speechSynthesis' in window) {
-                playNext();
-            } else {
-                alert('Browser does not support speech synthesis');
+            if (isPlayingAll) { // Only stop if the loop completed naturally
                 stopPlayAll();
             }
         }
@@ -917,14 +1095,14 @@
             }
             
             const stats = {
-                health: flashcards.filter(card => card.category === 'health').length,
-                qualities: flashcards.filter(card => card.category === 'qualities').length,
-                sports: flashcards.filter(card => card.category === 'sports').length,
-                leadership: flashcards.filter(card => card.category === 'leadership').length
+                general: flashcards.filter(card => card.category === 'general').length,
+                travel: flashcards.filter(card => card.category === 'travel').length,
+                movies: flashcards.filter(card => card.category === 'movies').length,
+                location: flashcards.filter(card => card.category === 'location').length
             };
             
             document.getElementById('stats').textContent = 
-                `Total: ${total} | Health: ${stats.health} | Qualities: ${stats.qualities} | Sports: ${stats.sports} | Leadership: ${stats.leadership} | Showing: ${visibleCount}`;
+                `Total: ${total} | General: ${stats.general} | Travel: ${stats.travel} | Movies: ${stats.movies} | Location: ${stats.location} | Showing: ${visibleCount}`;
         }
 
         // Keyboard shortcuts
@@ -983,3 +1161,4 @@
     </script>
 </body>
 </html>
+
